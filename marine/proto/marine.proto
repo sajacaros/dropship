@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// https://developers.google.com/protocol-buffers/docs/gotutorial
+
+package marine;
+option go_package="bnpinnovation.com/marine";
+
+message ProjectStatus {
+  string project = 1;
+  string status = 2;
+  string uptime = 3;
+  int32 pid = 4;
+}
+
+message StatusSummary {
+  repeated ProjectStatus projects = 1;
+}
+
+message ProjectIdentity {
+  string project = 1;
+}
+
+service ProjectService {
+//   Unary
+  rpc Summary(google.protobuf.Empty) returns (StatusSummary) {
+    option (google.api.http) = {
+      get: "/dropship/api/v1/status"
+    };
+  };
+
+  rpc Status(ProjectIdentity) returns (ProjectStatus) {
+    option (google.api.http) = {
+      get: "/dropship/api/v1/{project}/status"
+    };
+  };
+
+  rpc Start(ProjectIdentity) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/dropship/api/v1/{project}/start"
+    };
+  };
+
+  rpc Stop(ProjectIdentity) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/dropship/api/v1/{project}/stop"
+    };
+  };
+  rpc Update(ProjectIdentity) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/dropship/api/v1/{project}/update"
+    };
+  };
+
+}

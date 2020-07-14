@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+// https://developers.google.com/protocol-buffers/docs/gotutorial
+
+package greet;
+option go_package="greet/proto";
+
+message Greeting {
+    string first_name = 1;
+    string last_name = 2;
+}
+
+message GreetRequest {
+    Greeting greeting = 1;
+}
+
+message GreetResponse {
+    string result = 1;
+}
+
+service GreetService {
+    // Unary
+    rpc Greet(GreetRequest) returns (GreetResponse) {
+        option (google.api.http) = {
+            post: "/v1/hello"
+            body: "*"
+        };
+    };
+}
