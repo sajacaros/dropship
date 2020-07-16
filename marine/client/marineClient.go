@@ -32,19 +32,17 @@ func main() {
 		Project: args[0],
 	}
 
-	if err := executeCommand(args[1], client, req); err !=nil {
+	if err := executeCommand(client, args[1], req); err !=nil {
 		log.Fatalf("Error while calling RPC : %v", err)
 	}
 
 	log.Printf("complete")
 }
 
-func executeCommand(input string, client marine.ProjectServiceClient, req *marine.ProjectIdentity) error {
+func executeCommand(client marine.ProjectServiceClient, input string, req *marine.ProjectIdentity) error {
 	command := strings.ToLower(input)
 	var err error = nil
-	if command == "summary" {
-		_, err = client.Summary(context.Background(), nil)
-	} else if command == "status" {
+	if command == "status" {
 		_, err = client.Status(context.Background(), req)
 	} else if command == "start" {
 		_, err = client.Start(context.Background(), req)
