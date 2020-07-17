@@ -21,11 +21,11 @@ var profile = "-Dspring.profiles.active=localization"
 var versionRegex = regexp.MustCompile("[0-9]+")
 
 func Start(project string) error {
-	if err := checkByPidMap(project); err != nil {
+	if err := checkRunningByPidMap(project); err != nil {
 		return err
 	}
 
-	if err := checkByProcessName(project); err != nil {
+	if err := checkRunningByName(project); err != nil {
 		return err
 	}
 
@@ -37,25 +37,26 @@ func Start(project string) error {
 	log.Println("start ----", fullPath, "----")
 	cmd := exec.Command("java", "-Xmx512m", "-Xms256m", profile, "-jar", fullPath)
 	cmd.Dir = projectDir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	err = cmd.Start()
 	pm[project] = cmd.Process.Pid
 	return nil
 }
 
 func Stop(project string) error {
-	pid, exists := pm[project]
-
-	if !exists {
-		return errors.New("failed to retrieve pid, project : "+project)
+	pid, err := findPidByMap(project)
+	if err != nil {
+		pid, err = findPidByName(project)
+		if err != nil { // process가 존재하지 않음
+			return nil
+		}
 	}
 
-	proc, err := os.FindProcess(pid)
+	proc, err := process.NewProcess(int32(pid))
 	if err != nil {
 		log.Println(err)
 		return errors.New("failed to find process, project : "+project+", pid : " + string(pid))
 	}
+
 	// Kill the process
 	err = proc.Kill()
 	if err != nil {
@@ -66,6 +67,19 @@ func Stop(project string) error {
 	delete(pm, project)
 
 	return nil
+}
+
+func findPidByMap(project string) (int, error){
+	pid, exists := pm[project]
+	if !exists {
+		return -1, errors.New("failed to retrieve pid from map, project : "+project)
+	}
+
+	if exists, err := process.PidExists(int32(pid)); err != nil || !exists {
+		delete(pm, project)
+		return -1, errors.New("not exist running process, project : "+project+", pid : " + string(pid))
+	}
+	return pid, nil
 }
 
 func Update(project string) error {
@@ -81,7 +95,7 @@ func Update(project string) error {
 	return nil
 }
 
-func checkByPidMap(project string) error {
+func checkRunningByPidMap(project string) error {
 	if pid, existsInMap := pm[project]; existsInMap {
 		existsInProcess, err := process.PidExists(int32(pid))
 		if err != nil {
@@ -96,7 +110,7 @@ func checkByPidMap(project string) error {
 	return nil
 }
 
-func checkByProcessName(project string) error {
+func checkRunningByName(project string) error {
 	processes, _ := process.Processes()
 	for _, pr := range processes {
 		var cmdLine string
@@ -107,6 +121,19 @@ func checkByProcessName(project string) error {
 		}
 	}
 	return nil
+}
+
+func findPidByName(project string) (int, error) {
+	processes, _ := process.Processes()
+	for _, pr := range processes {
+		var cmdLine string
+		var err error
+		cmdLine, err = pr.Cmdline()
+		if err == nil && strings.Contains(cmdLine, project) {
+			return int(pr.Pid), nil
+		}
+	}
+	return -1, errors.New("not exist running project, project : " + project)
 }
 
 func jarFile(projectDir string) (string, error) {
