@@ -23,17 +23,17 @@ func (*dropship) Status(ctx context.Context, request *marine.ProjectIdentity) (*
 func (*dropship) Start(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
 	log.Printf("start %s", request.Project)
 	err := process.Start(request.Project)
-	return nil, err
+	return &empty.Empty{}, err
 }
 func (*dropship) Stop(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
 	log.Printf("stop %s", request.Project)
 	err := process.Stop(request.Project)
-	return nil, err
+	return &empty.Empty{}, err
 }
 func (*dropship) Update(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
 	log.Printf("update %s", request.Project)
 	err := process.Update(request.Project)
-	return nil, err
+	return &empty.Empty{}, err
 }
 
 func main() {
