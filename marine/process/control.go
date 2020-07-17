@@ -2,13 +2,13 @@ package process
 
 import (
 	"errors"
+	"github.com/Masterminds/semver"
+	"github.com/shirou/gopsutil/process"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"github.com/Masterminds/semver"
-	"github.com/shirou/gopsutil/process"
 	"strings"
 )
 

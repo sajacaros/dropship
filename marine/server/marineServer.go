@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"github.com/sajacaros/dropship/marine/process"
@@ -23,7 +22,6 @@ func (*dropship) Status(ctx context.Context, request *marine.ProjectIdentity) (*
 }
 func (*dropship) Start(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
 	log.Printf("start %s", request.Project)
-
 	err := process.Start(request.Project)
 	return nil, err
 }
@@ -39,17 +37,17 @@ func (*dropship) Update(ctx context.Context, request *marine.ProjectIdentity) (*
 }
 
 func main() {
-	fmt.Println("Start Dropship Server")
+	log.Println("Start Dropship Server")
 
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
-		log.Fatalf("Failed to listen : %v", err)
+		log.Fatalf("failed to listen : %v", err)
 	}
 
 	s := grpc.NewServer()
 	marine.RegisterProjectServiceServer(s, &dropship{})
 
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+		log.Fatalf("failed to serve: %v", err)
 	}
 }
