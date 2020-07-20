@@ -220,7 +220,7 @@ var file_marine_proto_marine_proto_rawDesc = []byte{
 	0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x22,
 	0x2b, 0x0a, 0x0f, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x69,
 	0x74, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x32, 0xfc, 0x03, 0x0a,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x32, 0xb9, 0x04, 0x0a,
 	0x0e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
 	0x59, 0x0a, 0x07, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70,
@@ -252,9 +252,13 @@ var file_marine_proto_marine_proto_rawDesc = []byte{
 	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79,
 	0x22, 0x29, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x23, 0x22, 0x21, 0x2f, 0x64, 0x72, 0x6f, 0x70, 0x73,
 	0x68, 0x69, 0x70, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x7d, 0x2f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x42, 0x1a, 0x5a, 0x18, 0x62,
-	0x6e, 0x70, 0x69, 0x6e, 0x6e, 0x6f, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x6d, 0x61, 0x72, 0x69, 0x6e, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x63, 0x74, 0x7d, 0x2f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x3b, 0x0a, 0x07, 0x49,
+	0x6e, 0x73, 0x74, 0x61, 0x6c, 0x6c, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x16,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x42, 0x1a, 0x5a, 0x18, 0x62, 0x6e, 0x70, 0x69,
+	0x6e, 0x6e, 0x6f, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6d, 0x61,
+	0x72, 0x69, 0x6e, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -283,13 +287,15 @@ var file_marine_proto_marine_proto_depIdxs = []int32{
 	2, // 3: marine.ProjectService.Start:input_type -> marine.ProjectIdentity
 	2, // 4: marine.ProjectService.Stop:input_type -> marine.ProjectIdentity
 	2, // 5: marine.ProjectService.Update:input_type -> marine.ProjectIdentity
-	1, // 6: marine.ProjectService.Summary:output_type -> marine.StatusSummary
-	0, // 7: marine.ProjectService.Status:output_type -> marine.ProjectStatus
-	3, // 8: marine.ProjectService.Start:output_type -> google.protobuf.Empty
-	3, // 9: marine.ProjectService.Stop:output_type -> google.protobuf.Empty
-	3, // 10: marine.ProjectService.Update:output_type -> google.protobuf.Empty
-	6, // [6:11] is the sub-list for method output_type
-	1, // [1:6] is the sub-list for method input_type
+	3, // 6: marine.ProjectService.Install:input_type -> google.protobuf.Empty
+	1, // 7: marine.ProjectService.Summary:output_type -> marine.StatusSummary
+	0, // 8: marine.ProjectService.Status:output_type -> marine.ProjectStatus
+	3, // 9: marine.ProjectService.Start:output_type -> google.protobuf.Empty
+	3, // 10: marine.ProjectService.Stop:output_type -> google.protobuf.Empty
+	3, // 11: marine.ProjectService.Update:output_type -> google.protobuf.Empty
+	3, // 12: marine.ProjectService.Install:output_type -> google.protobuf.Empty
+	7, // [7:13] is the sub-list for method output_type
+	1, // [1:7] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -376,6 +382,7 @@ type ProjectServiceClient interface {
 	Start(ctx context.Context, in *ProjectIdentity, opts ...grpc.CallOption) (*empty.Empty, error)
 	Stop(ctx context.Context, in *ProjectIdentity, opts ...grpc.CallOption) (*empty.Empty, error)
 	Update(ctx context.Context, in *ProjectIdentity, opts ...grpc.CallOption) (*empty.Empty, error)
+	Install(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type projectServiceClient struct {
@@ -431,6 +438,15 @@ func (c *projectServiceClient) Update(ctx context.Context, in *ProjectIdentity, 
 	return out, nil
 }
 
+func (c *projectServiceClient) Install(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/marine.ProjectService/Install", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProjectServiceServer is the server API for ProjectService service.
 type ProjectServiceServer interface {
 	//   Unary
@@ -439,6 +455,7 @@ type ProjectServiceServer interface {
 	Start(context.Context, *ProjectIdentity) (*empty.Empty, error)
 	Stop(context.Context, *ProjectIdentity) (*empty.Empty, error)
 	Update(context.Context, *ProjectIdentity) (*empty.Empty, error)
+	Install(context.Context, *empty.Empty) (*empty.Empty, error)
 }
 
 // UnimplementedProjectServiceServer can be embedded to have forward compatible implementations.
@@ -459,6 +476,9 @@ func (*UnimplementedProjectServiceServer) Stop(context.Context, *ProjectIdentity
 }
 func (*UnimplementedProjectServiceServer) Update(context.Context, *ProjectIdentity) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (*UnimplementedProjectServiceServer) Install(context.Context, *empty.Empty) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Install not implemented")
 }
 
 func RegisterProjectServiceServer(s *grpc.Server, srv ProjectServiceServer) {
@@ -555,6 +575,24 @@ func _ProjectService_Update_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProjectService_Install_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).Install(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/marine.ProjectService/Install",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).Install(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ProjectService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "marine.ProjectService",
 	HandlerType: (*ProjectServiceServer)(nil),
@@ -578,6 +616,10 @@ var _ProjectService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _ProjectService_Update_Handler,
+		},
+		{
+			MethodName: "Install",
+			Handler:    _ProjectService_Install_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
