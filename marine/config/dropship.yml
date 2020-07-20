@@ -1,0 +1,8 @@
+source: ~/upload
+projects:
+  - command
+  - sunken
+  - cybernetics
+  - forge
+  - overlord
+  - nexus

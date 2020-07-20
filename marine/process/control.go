@@ -3,7 +3,9 @@ package process
 import (
 	"errors"
 	"github.com/Masterminds/semver"
+	"github.com/sajacaros/dropship/marine/config"
 	"github.com/shirou/gopsutil/process"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -30,7 +32,7 @@ func Start(project string) error {
 	}
 
 	projectDir := projectDir(project)
-	fullPath, err := jarFile(projectDir)
+	fullPath, err := jarFile(projectDir, project)
 	if err != nil {
 		return err
 	}
@@ -69,6 +71,54 @@ func Stop(project string) error {
 	return nil
 }
 
+func Update(project string) error {
+	source, err := config.Source()
+	if err != nil {
+		return err
+	}
+	err = jarFileCopy(source, project)
+	if err != nil {
+		return err
+	}
+
+	if err = Stop(project); err != nil {
+		log.Println(err)
+	}
+
+	if err = Start(project); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func jarFileCopy(source string, project string) error {
+	file, err := jarFile(source, project)
+	if err != nil {
+		return err
+	}
+
+	err = copy(source+"/"+file, projectDir(project)+"/"+file)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func copy(src string, dst string) error {
+	// Read all content of src to data
+	data, err := ioutil.ReadFile(src)
+	if err!=nil {
+		return err
+	}
+	// Write data to dst
+	err = ioutil.WriteFile(dst, data, 0644)
+	if err!=nil {
+		return err
+	}
+}
+
 func findPidByMap(project string) (int, error){
 	pid, exists := pm[project]
 	if !exists {
@@ -80,19 +130,6 @@ func findPidByMap(project string) (int, error){
 		return -1, errors.New("not exist running process, project : "+project+", pid : " + string(pid))
 	}
 	return pid, nil
-}
-
-func Update(project string) error {
-	if err := Stop(project); err != nil {
-		log.Println(err)
-	}
-
-	if err := Start(project); err != nil {
-		log.Println(err)
-		return err
-	}
-
-	return nil
 }
 
 func checkRunningByPidMap(project string) error {
@@ -136,19 +173,13 @@ func findPidByName(project string) (int, error) {
 	return -1, errors.New("not exist running project, project : " + project)
 }
 
-func jarFile(projectDir string) (string, error) {
-	d, err := os.Open(projectDir)
-	if err != nil {
-		return "", errors.New("failed to open directory, dir : " + projectDir)
-	}
-	defer d.Close()
-
-	files, err := d.Readdir(-1)
+func jarFile(projectDir string, project string) (string, error) {
+	files, err := ioutil.ReadDir(projectDir)
 	if err != nil {
 		return "", errors.New("failed to read directory, dir : " + projectDir)
 	}
 	//^my-jar(\-\d+|\-\d+\.\d+)\.jar$
-	targetFile := latestJarFile(files)
+	targetFile := latestJarFile(files, project)
 	if targetFile != "" {
 		return projectDir + "/" + targetFile, nil
 	} else {
@@ -160,11 +191,15 @@ func projectDir(project string) string {
 	return workingDir + "/" + project
 }
 
-func latestJarFile(files []os.FileInfo) string {
+func latestJarFile(files []os.FileInfo, project string) string {
 	var targetFile string
 	var prevVersion *semver.Version
 	for _, file := range files {
 		if filepath.Ext(file.Name()) != ".jar" {
+			continue
+		}
+
+		if match, err := regexp.MatchString(project, file.Name()); !match || err!=nil {
 			continue
 		}
 
