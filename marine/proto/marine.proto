@@ -54,4 +54,6 @@ service ProjectService {
     };
   };
 
+  rpc Install(google.protobuf.Empty) returns (google.protobuf.Empty){
+  };
 }
