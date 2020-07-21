@@ -12,7 +12,7 @@ type options struct {
 	Projects []string `yaml:",flow"`
 }
 
-var yamlFile = "~/.dropship/config.yml"
+var yamlFile = "$HOME/.dropship/config.yml"
 
 func Source() (string, error) {
 	filename, _ := filepath.Abs(yamlFile)
