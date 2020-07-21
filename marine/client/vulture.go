@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"google.golang.org/grpc"
 	"log"
@@ -52,7 +53,7 @@ func main() {
 func executeCommand(client marine.ProjectServiceClient, command string, req *marine.ProjectIdentity) error {
 	var err error = nil
 	if strings.EqualFold(command,"install") {
-		_, err = client.Install(context.Background(), nil)
+		_, err = client.Install(context.Background(), &empty.Empty{})
 	} else if strings.EqualFold(command, "status") {
 		_, err = client.Status(context.Background(), req)
 	} else if strings.EqualFold(command, "start") {
