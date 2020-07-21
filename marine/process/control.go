@@ -217,7 +217,7 @@ func findJarFileName(projectDir string, project string) (string, error) {
 	//^my-jar(\-\d+|\-\d+\.\d+)\.jar$
 	targetFile := latestJarFile(files, project)
 	if targetFile != "" {
-		return projectDir + "/" + targetFile, nil
+		return targetFile, nil
 	} else {
 		return "", errors.New("failed to find jar")
 	}
