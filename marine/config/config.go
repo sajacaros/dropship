@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
@@ -12,18 +13,24 @@ type options struct {
 	Projects []string `yaml:",flow"`
 }
 
-var yamlFile = "$HOME/.dropship/config.yml"
+var home string
+var yamlPath string
+
+func init() {
+	home, _ = os.UserHomeDir()
+	yamlPath = home + "/.dropship/config.yml"
+}
 
 func Source() (string, error) {
-	filename, _ := filepath.Abs(yamlFile)
-	yamlFile, err := ioutil.ReadFile(filename)
+	filename, _ := filepath.Abs(yamlPath)
+	yamlContents, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return "", errors.New("failed to read yaml file")
 	}
 
 	options := options{}
 
-	err = yaml.Unmarshal(yamlFile, &options)
+	err = yaml.Unmarshal(yamlContents, &options)
 	if err != nil {
 		return "", errors.New("failed to unmarshal yaml file")
 	}
@@ -31,15 +38,15 @@ func Source() (string, error) {
 }
 
 func Projects() ([]string, error) {
-	filename, _ := filepath.Abs(yamlFile)
-	yamlFile, err := ioutil.ReadFile(filename)
+	filename, _ := filepath.Abs(yamlPath)
+	yamlContents, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, errors.New("failed to read yaml file")
 	}
 
 	options := options{}
 
-	err = yaml.Unmarshal(yamlFile, &options)
+	err = yaml.Unmarshal(yamlContents, &options)
 	if err != nil {
 		return nil, errors.New("failed to unmarshal yaml file")
 	}
