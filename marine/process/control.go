@@ -110,7 +110,10 @@ func Install() error {
 	waitGroup.Add(len(projects))
 	for _, project := range projects {
 		go func(p string) {
-			jarFileCopy(source, p)
+			err = jarFileCopy(source, p)
+			if err!=nil {
+				log.Println("copy error : ", err)
+			}
 			waitGroup.Done()
 		}(project)
 	}
