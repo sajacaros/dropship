@@ -194,6 +194,7 @@ func checkRunningByName(project string) error {
 		var err error
 		cmdLine, err = pr.Cmdline()
 		if err == nil && strings.Contains(cmdLine, project) {
+			log.Println("comLine : ", cmdLine)
 			return errors.New("already started.., please start after kill process, project : " + project + ", pid : " + strconv.Itoa(int(pr.Pid)))
 		}
 	}
