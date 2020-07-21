@@ -51,6 +51,7 @@ func Stop(project string) error {
 	if err != nil {
 		pid, err = findPidByName(project)
 		if err != nil { // process가 존재하지 않음
+			log.Println(project, "가 존재하지 않음")
 			return nil
 		}
 	}
