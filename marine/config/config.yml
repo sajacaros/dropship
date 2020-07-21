@@ -1,4 +1,4 @@
-source: ~/upload
+source: ~/workspace/upload
 projects:
   - command
   - sunken

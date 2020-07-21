@@ -36,6 +36,12 @@ func (*dropship) Update(ctx context.Context, request *marine.ProjectIdentity) (*
 	return &empty.Empty{}, err
 }
 
+func (*dropship) Install(ctx context.Context, in *empty.Empty) (*empty.Empty, error) {
+	log.Printf("Install")
+	err := process.Install()
+	return &empty.Empty{}, err
+}
+
 func main() {
 	log.Println("Start Dropship Server")
 

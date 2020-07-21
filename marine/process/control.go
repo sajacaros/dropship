@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 type pidMap map[string]int
@@ -93,6 +94,36 @@ func Update(project string) error {
 	return nil
 }
 
+func Install() error {
+	source, err := config.Source()
+	if err != nil {
+		return err
+	}
+	projects, err := config.Projects()
+	if err != nil {
+		return err
+	} else if len(projects) < 1 {
+		return errors.New("empty project")
+	}
+
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(len(projects))
+	for _, project := range projects {
+		go func(p string) {
+			jarFileCopy(source, p)
+			waitGroup.Done()
+		}(project)
+	}
+
+	go func() {
+		waitGroup.Wait()
+	}()
+
+	return nil
+}
+
+
+
 func jarFileCopy(source string, project string) error {
 	file, err := jarFile(source, project)
 	if err != nil {
@@ -117,6 +148,7 @@ func copy(src string, dst string) error {
 	if err!=nil {
 		return err
 	}
+	return nil
 }
 
 func findPidByMap(project string) (int, error){
