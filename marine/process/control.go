@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -56,17 +57,19 @@ func Stop(project string) error {
 		}
 	}
 
+	log.Println("pid : ", strconv.Itoa(pid))
+
 	proc, err := process.NewProcess(int32(pid))
 	if err != nil {
 		log.Println(err)
-		return errors.New("failed to find process, project : "+project+", pid : " + string(pid))
+		return errors.New("failed to find process, project : "+project+", pid : " + strconv.Itoa(pid))
 	}
 
 	// Kill the process
 	err = proc.Kill()
 	if err != nil {
 		log.Println(err)
-		return errors.New("failed to kill process, project : "+project+", pid : " + string(pid))
+		return errors.New("failed to kill process, project : "+project+", pid : " + strconv.Itoa(pid))
 	}
 
 	delete(pm, project)
@@ -164,7 +167,7 @@ func findPidByMap(project string) (int, error){
 
 	if exists, err := process.PidExists(int32(pid)); err != nil || !exists {
 		delete(pm, project)
-		return -1, errors.New("not exist running process, project : "+project+", pid : " + string(pid))
+		return -1, errors.New("not exist running process, project : "+project+", pid : " + strconv.Itoa(pid))
 	}
 	return pid, nil
 }
@@ -173,10 +176,10 @@ func checkRunningByPidMap(project string) error {
 	if pid, existsInMap := pm[project]; existsInMap {
 		existsInProcess, err := process.PidExists(int32(pid))
 		if err != nil {
-			return errors.New("failed to check that existsInProcess pid.., project : " + project + ", pid : " + string(pid))
+			return errors.New("failed to check that existsInProcess pid.., project : " + project + ", pid : " + strconv.Itoa(pid))
 		}
 		if existsInProcess {
-			return errors.New("already started.., please start after stopping or updating, project : " + project + ", pid : " + string(pid))
+			return errors.New("already started.., please start after stopping or updating, project : " + project + ", pid : " + strconv.Itoa(pid))
 		} else {
 			delete(pm, project)
 		}
@@ -191,7 +194,7 @@ func checkRunningByName(project string) error {
 		var err error
 		cmdLine, err = pr.Cmdline()
 		if err == nil && strings.Contains(cmdLine, project) {
-			return errors.New("already started.., please start after kill process, project : " + project + ", pid : " + string(pr.Pid))
+			return errors.New("already started.., please start after kill process, project : " + project + ", pid : " + strconv.Itoa(int(pr.Pid)))
 		}
 	}
 	return nil
