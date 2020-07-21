@@ -33,7 +33,8 @@ func Start(project string) error {
 	}
 
 	projectDir := projectDir(project)
-	fullPath, err := findJarFullPath(projectDir, project)
+	fileName, err := findJarFileName(projectDir, project)
+	fullPath := projectDir+"/"+fileName
 	if err != nil {
 		return err
 	}
@@ -128,12 +129,12 @@ func Install() error {
 
 
 func jarFileCopy(source string, project string) error {
-	fullPath, err := findJarFullPath(source, project)
+	fileName, err := findJarFileName(source, project)
 	if err != nil {
 		return err
 	}
 
-	err = copy(fullPath, projectDir(project)+"/"+fullPath)
+	err = copy(source+"/"+fileName, projectDir(project)+"/"+fileName)
 	if err != nil {
 		return err
 	}
@@ -208,7 +209,7 @@ func findPidByName(project string) (int, error) {
 	return -1, errors.New("not exist running project, project : " + project)
 }
 
-func findJarFullPath(projectDir string, project string) (string, error) {
+func findJarFileName(projectDir string, project string) (string, error) {
 	files, err := ioutil.ReadDir(projectDir)
 	if err != nil {
 		return "", errors.New("failed to read directory, dir : " + projectDir)
