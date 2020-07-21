@@ -17,7 +17,7 @@ func main() {
 	// length check
 	args := os.Args[1:]
 	argsLength := len(args)
-	if argsLength != 1 || argsLength != 2  {
+	if !(argsLength == 1 || argsLength == 2) {
 		log.Fatalf("need to 1 or 2 arguments, please try for 'vulture {command} ({project})'")
 	}
 
