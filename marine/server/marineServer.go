@@ -75,8 +75,8 @@ func serveStaticServer(waitGroup *sync.WaitGroup) {
 
 	home, _ := os.UserHomeDir()
 	workingDir := home + "/workspace/dropship"
+	log.Println("working dir : " + home)
 	log.Println("static server serve, http://localhost:3000")
-
 	fs := http.FileServer(http.Dir(workingDir+"/static"))
 	http.Handle("/", fs)
 
