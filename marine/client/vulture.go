@@ -71,6 +71,12 @@ func executeCommand(client marine.ProjectServiceClient, command string, req *mar
 		_, err = client.Stop(context.Background(), req)
 	} else if strings.EqualFold(command, "update") {
 		_, err = client.Update(context.Background(), req)
+	} else if strings.EqualFold(command, "summary"){
+		var summary *marine.StatusSummary
+		summary, err = client.Summary(context.Background(), &empty.Empty{})
+		for _, status := range summary.Projects {
+			fmt.Println(statusToString(status))
+		}
 	} else {
 		err = errors.New("not supported command")
 	}

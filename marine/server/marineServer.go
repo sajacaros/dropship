@@ -14,12 +14,11 @@ type dropship struct {}
 
 func (*dropship) Summary(ctx context.Context, _ *empty.Empty) (*marine.StatusSummary, error) {
 	log.Printf("summary")
-	return nil, nil
+	return process.Summary()
 }
 func (*dropship) Status(ctx context.Context, request *marine.ProjectIdentity) (*marine.ProjectStatus, error){
 	log.Printf("status %s", request.Project)
-	prInfo := process.Status(request.Project)
-	return &marine.ProjectStatus{Project: prInfo.Project, Status: prInfo.Status, Pid: prInfo.Pid, Uptime: prInfo.Uptime}, nil
+	return process.Status(request.Project), nil
 }
 func (*dropship) Start(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
 	log.Printf("start %s", request.Project)

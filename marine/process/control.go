@@ -3,6 +3,7 @@ package process
 import (
 	"errors"
 	"github.com/Masterminds/semver"
+	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"github.com/sajacaros/dropship/marine/config"
 	"github.com/shirou/gopsutil/process"
 	"io/ioutil"
@@ -73,18 +74,6 @@ func Stop(project string) error {
 	return nil
 }
 
-func findPid(project string) (int, error) {
-	pid, err := findPidByMap(project)
-	if err != nil {
-		pid, err = findPidByName(project)
-		if err != nil { // process가 존재하지 않음
-			log.Println(project, "가 존재하지 않음")
-			return -1, errors.New("not running project")
-		}
-	}
-	return pid, nil
-}
-
 func Update(project string) error {
 	source, err := config.Source()
 	if err != nil {
@@ -138,26 +127,50 @@ func Install() error {
 	return nil
 }
 
-type ProcessInfo struct{
-	Project string
-	Status  string
-	Uptime  int64
-	Pid     int32
-}
-
-
-func Status(project string) ProcessInfo {
+func Status(project string) *marine.ProjectStatus {
 	pid, err := findPid(project)
 	if err != nil {
-		return ProcessInfo{Project: project, Status: "Down"}
+		return &marine.ProjectStatus{Project: project, Status: "Down"}
 	}
 	process, err := process.NewProcess( int32(pid))
 	if err != nil {
-		return ProcessInfo{Project: project, Status: "Down"}
+		return &marine.ProjectStatus{Project: project, Status: "Down"}
 	}
 	createTime, _ := process.CreateTime()
 	log.Println("create time : ", strconv.Itoa(int(createTime)), ", pid : ", strconv.Itoa(pid))
-	return ProcessInfo{Project: project, Status: "Running", Uptime: createTime, Pid: int32(pid)}
+	return &marine.ProjectStatus{Project: project, Status: "Running", Uptime: createTime, Pid: int32(pid)}
+}
+
+func Summary() (*marine.StatusSummary, error) {
+	projects, err := config.Projects()
+	if err != nil {
+		return nil, err
+	}
+
+	c := make(chan *marine.ProjectStatus)
+	for _, project := range projects {
+		go func(prj string) {
+			c <- Status(prj)
+		}(project)
+	}
+
+	var summary []*marine.ProjectStatus
+	for i:=0; i<len(projects); i++ {
+		summary = append(summary, <-c)
+	}
+	return &marine.StatusSummary{Projects: summary}, nil
+}
+
+func findPid(project string) (int, error) {
+	pid, err := findPidByMap(project)
+	if err != nil {
+		pid, err = findPidByName(project)
+		if err != nil { // process가 존재하지 않음
+			log.Println(project, "가 존재하지 않음")
+			return -1, errors.New("not running project")
+		}
+	}
+	return pid, nil
 }
 
 
