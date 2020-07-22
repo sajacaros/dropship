@@ -20,3 +20,7 @@
     set GOOS=linux&&set GOARCH=amd64&&go build -o build/out/vulture marine/client/vulture.go
     set GOOS=linux&&set GOARCH=amd64&&go build -o build/out/marineHttp marine/http/marineHttp.go
     ```
+## static resource
+    ```
+    https://www.alexedwards.net/blog/serving-static-sites-with-go
+    ```
