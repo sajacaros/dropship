@@ -27,7 +27,7 @@ service ProjectService {
 //   Unary
   rpc Summary(google.protobuf.Empty) returns (StatusSummary) {
     option (google.api.http) = {
-      get: "/dropship/api/v1/status"
+      get: "/dropship/api/v1/summary"
     };
   };
 
