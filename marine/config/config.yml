@@ -1,8 +1,11 @@
 source: ~/workspace/upload
 projects:
+  - battery
+  - nexus
   - command
-  - sunken
   - cybernetics
   - nydus
   - overlord
-  - nexus
+  - bunker
+  - observatory
+  - sunken

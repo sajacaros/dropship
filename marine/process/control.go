@@ -41,7 +41,7 @@ func Start(project string) error {
 		return err
 	}
 	log.Println("start ----", fullPath, "----")
-	cmd := exec.Command("java", "-Xmx512m", "-Xms256m", profile, "-jar", fullPath, "--detached")
+	cmd := exec.Command("java", "-Xmx512m", "-Xms256m", profile, "-jar", fullPath)
 	cmd.Dir = projectDir
 	err = cmd.Start()
 	pm[project] = cmd.Process.Pid
