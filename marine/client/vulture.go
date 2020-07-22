@@ -27,7 +27,7 @@ func main() {
 
 	// init
 	var req *marine.ProjectIdentity = nil
-	if !strings.EqualFold(args[0], "install" ) {
+	if !(strings.EqualFold(args[0], "install") || strings.EqualFold(args[0], "summary")) {
 		if argsLength != 2  {
 			log.Fatalf("need to 2 arguments, please try for 'vulture {command} ({project})'")
 		}
