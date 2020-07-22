@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sync"
 )
 
 type dropship struct {}
@@ -46,26 +47,37 @@ func (*dropship) Install(ctx context.Context, in *empty.Empty) (*empty.Empty, er
 func main() {
 	log.Println("Start Dropship Server")
 
-	lis, err := net.Listen("tcp", "0.0.0.0:50051")
-	if err != nil {
-		log.Fatalf("failed to listen : %v", err)
-	}
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(2)
+	go func() {
+		log.Println("grpc server serve, http://localhost:50051")
+		lis, err := net.Listen("tcp", "0.0.0.0:50051")
+		if err != nil {
+			log.Fatalf("failed to listen : %v", err)
+		}
 
-	s := grpc.NewServer()
-	marine.RegisterProjectServiceServer(s, &dropship{})
+		s := grpc.NewServer()
+		marine.RegisterProjectServiceServer(s, &dropship{})
 
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+		if err := s.Serve(lis); err != nil {
+			waitGroup.Done()
+			log.Printf("grpc server terminate. %v\n", err)
+		}
+	}()
 
-	log.Println("static server serve, http://localhost:3000")
+	go func() {
+		log.Println("static server serve, http://localhost:3000")
 
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
+		fs := http.FileServer(http.Dir("./static"))
+		http.Handle("/", fs)
 
-	log.Println("Listening on :3000...")
-	err = http.ListenAndServe(":3000", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+		log.Println("Listening on :3000...")
+		err := http.ListenAndServe(":3000", nil)
+		if err != nil {
+			waitGroup.Done()
+			log.Printf("static server terminate. %v\n", err)
+		}
+	}()
+
+	waitGroup.Wait()
 }
