@@ -48,13 +48,9 @@ func Start(project string) error {
 }
 
 func Stop(project string) error {
-	pid, err := findPidByMap(project)
+	pid, err := findPid(project)
 	if err != nil {
-		pid, err = findPidByName(project)
-		if err != nil { // process가 존재하지 않음
-			log.Println(project, "가 존재하지 않음")
-			return nil
-		}
+		return err
 	}
 
 	log.Println("pid : ", strconv.Itoa(pid))
@@ -62,19 +58,31 @@ func Stop(project string) error {
 	proc, err := process.NewProcess(int32(pid))
 	if err != nil {
 		log.Println(err)
-		return errors.New("failed to find process, project : "+project+", pid : " + strconv.Itoa(pid))
+		return errors.New("failed to find process, project : " + project + ", pid : " + strconv.Itoa(pid))
 	}
 
 	// Kill the process
 	err = proc.Kill()
 	if err != nil {
 		log.Println(err)
-		return errors.New("failed to kill process, project : "+project+", pid : " + strconv.Itoa(pid))
+		return errors.New("failed to kill process, project : " + project + ", pid : " + strconv.Itoa(pid))
 	}
 
 	delete(pm, project)
 
 	return nil
+}
+
+func findPid(project string) (int, error) {
+	pid, err := findPidByMap(project)
+	if err != nil {
+		pid, err = findPidByName(project)
+		if err != nil { // process가 존재하지 않음
+			log.Println(project, "가 존재하지 않음")
+			return -1, errors.New("not running project")
+		}
+	}
+	return pid, nil
 }
 
 func Update(project string) error {
@@ -130,6 +138,27 @@ func Install() error {
 	return nil
 }
 
+type ProcessInfo struct{
+	Project string
+	Status  string
+	Uptime  int64
+	Pid     int32
+}
+
+
+func Status(project string) ProcessInfo {
+	pid, err := findPid(project)
+	if err != nil {
+		return ProcessInfo{Project: project, Status: "Down"}
+	}
+	process, err := process.NewProcess( int32(pid))
+	if err != nil {
+		return ProcessInfo{Project: project, Status: "Down"}
+	}
+	createTime, _ := process.CreateTime()
+	log.Println("create time : ", strconv.Itoa(int(createTime)), ", pid : ", strconv.Itoa(pid))
+	return ProcessInfo{Project: project, Status: "Running", Uptime: createTime, Pid: int32(pid)}
+}
 
 
 func jarFileCopy(source string, project string) error {

@@ -9,7 +9,9 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -50,12 +52,30 @@ func main() {
 	log.Printf("complete")
 }
 
+func uptime(startTime time.Time) time.Duration {
+	return time.Since(startTime)
+}
+
 func executeCommand(client marine.ProjectServiceClient, command string, req *marine.ProjectIdentity) error {
 	var err error = nil
 	if strings.EqualFold(command,"install") {
 		_, err = client.Install(context.Background(), &empty.Empty{})
 	} else if strings.EqualFold(command, "status") {
-		_, err = client.Status(context.Background(), req)
+		var status *marine.ProjectStatus
+		status, err = client.Status(context.Background(), req)
+		var sb strings.Builder
+		sb.WriteString(status.Project)
+		sb.WriteString(" status : ")
+		sb.WriteString(status.Status)
+		if status.Pid != 0 {
+			sb.WriteString("(pid : ")
+			sb.WriteString(strconv.Itoa(int(status.Pid)))
+			duration := uptime(time.Unix(status.Uptime/1000, 0))
+			sb.WriteString(", uptime : ")
+			sb.WriteString(duration.String())
+			sb.WriteString(")")
+		}
+		fmt.Println(sb.String())
 	} else if strings.EqualFold(command, "start") {
 		_, err = client.Start(context.Background(), req)
 	} else if strings.EqualFold(command,"stop") {
