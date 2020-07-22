@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/hako/durafmt"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"google.golang.org/grpc"
 	"log"
@@ -72,7 +73,8 @@ func executeCommand(client marine.ProjectServiceClient, command string, req *mar
 			sb.WriteString(strconv.Itoa(int(status.Pid)))
 			duration := uptime(time.Unix(status.Uptime/1000, 0))
 			sb.WriteString(", uptime : ")
-			sb.WriteString(duration.String())
+			shortDuration, _ := durafmt.ParseStringShort(duration.String())
+			sb.WriteString(shortDuration.String())
 			sb.WriteString(")")
 		}
 		fmt.Println(sb.String())
