@@ -64,28 +64,36 @@ func executeCommand(client marine.ProjectServiceClient, command string, req *mar
 	} else if strings.EqualFold(command, "status") {
 		var status *marine.ProjectStatus
 		status, err = client.Status(context.Background(), req)
-		var sb strings.Builder
-		sb.WriteString(status.Project)
-		sb.WriteString(" status : ")
-		sb.WriteString(status.Status)
-		if status.Pid != 0 {
-			sb.WriteString("(pid : ")
-			sb.WriteString(strconv.Itoa(int(status.Pid)))
-			duration := uptime(time.Unix(status.Uptime/1000, 0))
-			sb.WriteString(", uptime : ")
-			shortDuration, _ := durafmt.ParseStringShort(duration.String())
-			sb.WriteString(shortDuration.String())
-			sb.WriteString(")")
-		}
-		fmt.Println(sb.String())
+		fmt.Println(statusToString(status))
 	} else if strings.EqualFold(command, "start") {
 		_, err = client.Start(context.Background(), req)
-	} else if strings.EqualFold(command,"stop") {
+	} else if strings.EqualFold(command, "stop") {
 		_, err = client.Stop(context.Background(), req)
-	} else if strings.EqualFold(command,"update") {
+	} else if strings.EqualFold(command, "update") {
 		_, err = client.Update(context.Background(), req)
 	} else {
 		err = errors.New("not supported command")
 	}
 	return err
+}
+
+func statusToString(status *marine.ProjectStatus) string {
+	var sb strings.Builder
+	sb.WriteString(status.Project)
+	sb.WriteString(" status : ")
+	sb.WriteString(status.Status)
+	if status.Pid != 0 {
+		sb.WriteString("(pid : ")
+		sb.WriteString(strconv.Itoa(int(status.Pid)))
+		sb.WriteString(", uptime : ")
+		sb.WriteString(uptimeShortString(status.Uptime))
+		sb.WriteString(")")
+	}
+	return sb.String()
+}
+
+func uptimeShortString(startTime int64) string {
+	duration := uptime(time.Unix(startTime/1000, 0))
+	shortDuration, _ := durafmt.ParseStringShort(duration.String())
+	return shortDuration.String()
 }
