@@ -235,7 +235,7 @@ func findPidByName(project string) (int, error) {
 		var cmdLine string
 		var err error
 		cmdLine, err = pr.Cmdline()
-		if err == nil && strings.Contains(cmdLine, project) {
+		if err == nil && !strings.Contains(cmdLine, "vulture") && strings.Contains(cmdLine, project) {
 			return int(pr.Pid), nil
 		}
 	}
