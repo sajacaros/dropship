@@ -5,9 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
+	"log"
 	"net/http"
 
-	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 )
@@ -48,10 +48,11 @@ func run() error {
 
 func main() {
 	fmt.Printf("dropship gw start")
-	flag.Parse()
-	defer glog.Flush()
+	//flag.Parse()
+	//defer glog.Flush()
 
 	if err := run(); err != nil {
-		glog.Fatal(err)
+		//glog.Fatal(err)
+		log.Fatal("err for marine http")
 	}
 }
