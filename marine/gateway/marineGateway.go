@@ -1,15 +1,12 @@
-package main
+package gateway
 
 import (
 	"context"
 	"flag"
-	"fmt"
-	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
-	"log"
-	"net/http"
-
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"google.golang.org/grpc"
+	"net/http"
 )
 
 var (
@@ -18,7 +15,8 @@ var (
 	grpcServerEndpoint = flag.String("dropship-server-endpoint",  "localhost:50051", "dropship server endpoint")
 )
 
-func run() error {
+func Run() error {
+	flag.Parse()
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -42,17 +40,14 @@ func run() error {
 	}
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(":8081", mux)
+	return http.ListenAndServe(":3001", mux)
 }
 
 
-func main() {
-	fmt.Printf("dropship gw start")
-	flag.Parse()
-	//defer glog.Flush()
-
-	if err := run(); err != nil {
-		//glog.Fatal(err)
-		log.Fatal("err for marine http")
-	}
-}
+//func main() {
+//	fmt.Printf("dropship gw start")
+//
+//	if err := run(); err != nil {
+//		log.Fatal("err for marine gateway")
+//	}
+//}

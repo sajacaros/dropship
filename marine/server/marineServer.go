@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
+	"github.com/sajacaros/dropship/marine/gateway"
 	"github.com/sajacaros/dropship/marine/process"
 	"google.golang.org/grpc"
 	"log"
@@ -49,14 +50,26 @@ func main() {
 	log.Println("Start Dropship Server")
 
 	var waitGroup sync.WaitGroup
-	waitGroup.Add(2)
+	waitGroup.Add(3)
 	go serveGRpcServer(&waitGroup)
 	go serveStaticServer(&waitGroup)
+	go serveGRpcGatewayServer(&waitGroup)
+
 	waitGroup.Wait()
 }
 
+func serveGRpcGatewayServer(waitGroup *sync.WaitGroup) {
+	log.Println("grpc-gateway server serve")
+
+	if err := gateway.Run(); err != nil {
+		waitGroup.Done()
+		log.Printf("grpc-gateway server terminate. %v\n", err)
+	}
+
+}
+
 func serveGRpcServer(waitGroup *sync.WaitGroup)  {
-	log.Println("grpc server serve, http://localhost:50051")
+	log.Println("grpc server serve, gateway://localhost:50051")
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("failed to listen : %v", err)
@@ -72,10 +85,9 @@ func serveGRpcServer(waitGroup *sync.WaitGroup)  {
 }
 
 func serveStaticServer(waitGroup *sync.WaitGroup) {
-
 	home, _ := os.UserHomeDir()
 	workingDir := home + "/workspace/dropship"
-	log.Println("static server serve, http://localhost:3000")
+	log.Println("static server serve, gateway://localhost:3000")
 	fs := http.FileServer(http.Dir(workingDir+"/static"))
 	http.Handle("/", fs)
 
