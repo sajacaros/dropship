@@ -11,6 +11,7 @@ import (
 type options struct {
 	Source string
 	Projects []string `yaml:",flow"`
+	Profile string
 }
 
 var home string
@@ -22,22 +23,30 @@ func init() {
 }
 
 func Source() (string, error) {
-	filename, _ := filepath.Abs(yamlPath)
-	yamlContents, err := ioutil.ReadFile(filename)
+	options, err := yamlContents()
 	if err != nil {
-		return "", errors.New("failed to read yaml file")
-	}
-
-	options := options{}
-
-	err = yaml.Unmarshal(yamlContents, &options)
-	if err != nil {
-		return "", errors.New("failed to unmarshal yaml file")
+		return "", err
 	}
 	return options.Source, nil
 }
 
+func Profile() (string, error) {
+	options, err := yamlContents()
+	if err != nil {
+		return "", err
+	}
+	return options.Profile, nil
+}
+
 func Projects() ([]string, error) {
+	options, err := yamlContents()
+	if err != nil {
+		return nil, err
+	}
+	return options.Projects, nil
+}
+
+func yamlContents() (*options, error) {
 	filename, _ := filepath.Abs(yamlPath)
 	yamlContents, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -50,5 +59,5 @@ func Projects() ([]string, error) {
 	if err != nil {
 		return nil, errors.New("failed to unmarshal yaml file")
 	}
-	return options.Projects, nil
+	return &options, nil
 }

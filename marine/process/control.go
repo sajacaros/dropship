@@ -23,7 +23,7 @@ type pidMap map[string]int
 var pm = pidMap{}
 var workingDir = "/var/local/vms/deploy"
 
-var profile = "-Dspring.profiles.active=localization"
+var profileBase = "-Dspring.profiles.active="
 
 var versionRegex = regexp.MustCompile("[0-9]+")
 
@@ -43,7 +43,14 @@ func Start(project string) error {
 		return err
 	}
 	log.Println("start ----", fullPath, "----")
-	cmd := exec.Command("java", "-Xmx512m", "-Xms256m", profile, "-jar", fullPath)
+
+	var profile string
+	profile, err = config.Profile()
+	if err!=nil  {
+		return err
+	}
+
+	cmd := exec.Command("java", "-Xmx512m", "-Xms256m", profileBase+profile, "-jar", fullPath)
 	cmd.Dir = projectDir
 	err = cmd.Start()
 	pm[project] = cmd.Process.Pid
