@@ -65,7 +65,6 @@ func serveGRpcGatewayServer(waitGroup *sync.WaitGroup) {
 		waitGroup.Done()
 		log.Printf("grpc-gateway server terminate. %v\n", err)
 	}
-
 }
 
 func serveGRpcServer(waitGroup *sync.WaitGroup)  {

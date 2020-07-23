@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"flag"
+	"github.com/gorilla/handlers"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"google.golang.org/grpc"
@@ -23,7 +24,7 @@ func Run() error {
 
 	// Register gRPC server endpoint
 	// Note: Make sure the gRPC server is running properly and accessible
-	mux := runtime.NewServeMux(
+	basicMux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(
 			runtime.MIMEWildcard,
 			&runtime.JSONPb{
@@ -32,9 +33,14 @@ func Run() error {
 			},
 		),
 		)
+	mux := handlers.CORS(
+		handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
+		handlers.AllowedHeaders([]string{"content-type", "x-foobar-key"}),
+	)(basicMux)
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 
-	err := marine.RegisterProjectServiceHandlerFromEndpoint(ctx, mux,  *grpcServerEndpoint, opts)
+	err := marine.RegisterProjectServiceHandlerFromEndpoint(ctx, basicMux,  *grpcServerEndpoint, opts)
 	if err != nil {
 		return err
 	}
