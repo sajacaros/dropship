@@ -3,6 +3,7 @@ package process
 import (
 	"errors"
 	"github.com/Masterminds/semver"
+	"github.com/hako/durafmt"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"github.com/sajacaros/dropship/marine/config"
 	"github.com/shirou/gopsutil/process"
@@ -15,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type pidMap map[string]int
@@ -138,7 +140,7 @@ func Status(project string) *marine.ProjectStatus {
 	}
 	createTime, _ := process.CreateTime()
 	log.Println("create time : ", strconv.Itoa(int(createTime)), ", pid : ", strconv.Itoa(pid))
-	return &marine.ProjectStatus{Project: project, Status: "Running", Uptime: createTime, Pid: int32(pid)}
+	return &marine.ProjectStatus{Project: project, Status: "Running", Uptime: uptimeShortString(createTime), Pid: int32(pid)}
 }
 
 func Summary() (*marine.StatusSummary, error) {
@@ -303,4 +305,13 @@ func latestJarFile(files []os.FileInfo, project string) string {
 		}
 	}
 	return targetFile
+}
+func uptime(startTime time.Time) time.Duration {
+	return time.Since(startTime)
+}
+
+func uptimeShortString(startTime int64) string {
+	duration := uptime(time.Unix(startTime/1000, 0))
+	shortDuration, _ := durafmt.ParseStringShort(duration.String())
+	return shortDuration.String()
 }

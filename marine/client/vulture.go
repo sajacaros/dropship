@@ -5,14 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/hako/durafmt"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"google.golang.org/grpc"
 	"log"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -53,10 +51,6 @@ func main() {
 	log.Printf("complete")
 }
 
-func uptime(startTime time.Time) time.Duration {
-	return time.Since(startTime)
-}
-
 func executeCommand(client marine.ProjectServiceClient, command string, req *marine.ProjectIdentity) error {
 	var err error = nil
 	if strings.EqualFold(command,"install") {
@@ -92,14 +86,9 @@ func statusToString(status *marine.ProjectStatus) string {
 		sb.WriteString("(pid : ")
 		sb.WriteString(strconv.Itoa(int(status.Pid)))
 		sb.WriteString(", uptime : ")
-		sb.WriteString(uptimeShortString(status.Uptime))
+		sb.WriteString(status.Uptime)
 		sb.WriteString(")")
 	}
 	return sb.String()
 }
 
-func uptimeShortString(startTime int64) string {
-	duration := uptime(time.Unix(startTime/1000, 0))
-	shortDuration, _ := durafmt.ParseStringShort(duration.String())
-	return shortDuration.String()
-}

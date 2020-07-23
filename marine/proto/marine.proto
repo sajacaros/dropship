@@ -11,7 +11,7 @@ option go_package="bnpinnovation.com/marine";
 message ProjectStatus {
   string project = 1;
   string status = 2;
-  int64 uptime = 3;
+  string uptime = 3;
   int32 pid = 4;
 }
 
