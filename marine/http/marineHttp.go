@@ -48,7 +48,7 @@ func run() error {
 
 func main() {
 	fmt.Printf("dropship gw start")
-	//flag.Parse()
+	flag.Parse()
 	//defer glog.Flush()
 
 	if err := run(); err != nil {
