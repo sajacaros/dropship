@@ -89,8 +89,6 @@ func serveStaticServer(waitGroup *sync.WaitGroup) {
 	log.Println("static server serve, gateway://localhost:3000")
 	fs := http.FileServer(http.Dir(workingDir+"/static"))
 	http.Handle("/", fs)
-
-	log.Println("Listening on :3000...")
 	err := http.ListenAndServe(":3000", nil)
 	if err != nil {
 		waitGroup.Done()

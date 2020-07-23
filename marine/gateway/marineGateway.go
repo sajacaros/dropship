@@ -35,7 +35,7 @@ func Run() error {
 		)
 	mux := handlers.CORS(
 		handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
+		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{"content-type", "x-foobar-key"}),
 	)(basicMux)
 	opts := []grpc.DialOption{grpc.WithInsecure()}
