@@ -244,7 +244,8 @@ func checkRunningByName(project string) error {
 		var cmdLine string
 		var err error
 		cmdLine, err = pr.Cmdline()
-		if err == nil && !strings.Contains(cmdLine, "vulture") && strings.Contains(cmdLine, project) {
+		command := strings.Split(cmdLine, " ")[0]
+		if err == nil && strings.Contains(command, "java") && strings.Contains(cmdLine, project) {
 			return errors.New("already started.., please start after kill process, project : " + project + ", pid : " + strconv.Itoa(int(pr.Pid)))
 		}
 	}
@@ -257,7 +258,8 @@ func findPidByName(project string) (int, error) {
 		var cmdLine string
 		var err error
 		cmdLine, err = pr.Cmdline()
-		if err == nil && !strings.Contains(cmdLine, "vulture") && strings.Contains(cmdLine, project) {
+		command := strings.Split(cmdLine, " ")[0]
+		if err == nil && strings.Contains(command, "java") && strings.Contains(cmdLine, project) {
 			return int(pr.Pid), nil
 		}
 	}
