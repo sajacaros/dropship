@@ -23,3 +23,8 @@
     ```
     https://www.alexedwards.net/blog/serving-static-sites-with-go
     ```
+    
+## config
+    ```
+    ${home}/.dropship/config.yml
+    ```

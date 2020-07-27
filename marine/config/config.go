@@ -13,6 +13,7 @@ type options struct {
 	Projects []string `yaml:",flow"`
 	Profile string
 	Dependency string
+	WorkingDir string
 }
 
 var home string
@@ -45,6 +46,14 @@ func Profile() (string, error) {
 		return "", err
 	}
 	return options.Profile, nil
+}
+
+func WorkingDir() (string, error) {
+	options, err := yamlContents()
+	if err != nil {
+		return "", err
+	}
+	return options.WorkingDir, nil
 }
 
 func Projects() ([]string, error) {

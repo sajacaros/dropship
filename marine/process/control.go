@@ -22,7 +22,6 @@ import (
 
 type pidMap map[string]int
 var pm = pidMap{}
-var workingDir = "/var/local/vms/deploy"
 
 var profileBase = "-Dspring.profiles.active="
 
@@ -300,7 +299,11 @@ func findJarFileName(projectDir string, project string) (string, error) {
 }
 
 func projectDir(project string) string {
-	return workingDir + "/" + project
+	workingDir, err := config.WorkingDir()
+	if err != nil {
+		return "./"
+	}
+	return  workingDir+ "/" + project
 }
 
 func latestJarFile(files []os.FileInfo, project string) string {
