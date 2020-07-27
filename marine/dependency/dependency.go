@@ -83,6 +83,7 @@ func drawDependency(node *Node) *[]string {
 
 func makeLinkedList(dependencyStr string) {
 	dependencyArr := strings.Split(dependencyStr, "-")
+	log.Info(dependencyArr)
 	for _, dependency := range dependencyArr {
 		var t Node
 		if strings.HasPrefix(dependency, "[") {
