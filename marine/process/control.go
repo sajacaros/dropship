@@ -6,6 +6,7 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"github.com/sajacaros/dropship/marine/config"
+	"github.com/sajacaros/dropship/marine/dependency"
 	"github.com/shirou/gopsutil/process"
 	"io/ioutil"
 	"log"
@@ -28,6 +29,10 @@ var profileBase = "-Dspring.profiles.active="
 var versionRegex = regexp.MustCompile("[0-9]+")
 
 func Start(project string) error {
+	if err := assertDependency(project); err!=nil {
+		return err
+	}
+	
 	if err := checkRunningByPidMap(project); err != nil {
 		return err
 	}
@@ -54,6 +59,20 @@ func Start(project string) error {
 	cmd.Dir = projectDir
 	err = cmd.Start()
 	pm[project] = cmd.Process.Pid
+	return nil
+}
+
+func assertDependency(project string) error {
+	dependencies, err := dependency.ReadDependency(project)
+	if err != nil {
+		return err
+	}
+
+	for _, dep := range *dependencies {
+		if Status(dep).Status == "Down" {
+			return errors.New("dep illegal, dep map : " +strings.Join(*dependencies, "->"))
+		}
+	}
 	return nil
 }
 
