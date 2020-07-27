@@ -10,4 +10,4 @@ projects:
   - observatory
   - sunken
 profile: localization
-dependency: [battery,observatory]-nexus-sunken-command
+dependency: "[battery,observatory]-nexus-sunken-command"
