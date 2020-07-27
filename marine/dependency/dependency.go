@@ -65,11 +65,10 @@ func ReadDependency(project string) (*[]string, error){
 
 	node, err := findNode(current, project)
 	if err != nil {
-		return nil, nil
+		return drawDependency(current), nil
 	}
-	ret := drawDependency(node)
-	current = &root
-	return ret, nil
+
+	return drawDependency(node), nil
 }
 
 func drawDependency(node *Node) *[]string {
@@ -78,6 +77,7 @@ func drawDependency(node *Node) *[]string {
 		dependencyArr = append(*node.Parent.Projects, dependencyArr...)
 		node = node.Parent
 	}
+	current = &root
 	return &dependencyArr
 }
 
