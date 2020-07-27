@@ -65,14 +65,25 @@ func ReadDependency(project string) (*[]string, error){
 
 	node, err := findNode(current, project)
 	if err != nil {
-		return drawDependency(current), nil
+		return drawDependencyInclude(node), nil
 	}
 
-	return drawDependency(node), nil
+	return drawDependencyExclude(node), nil
 }
 
-func drawDependency(node *Node) *[]string {
+func drawDependencyInclude(node *Node) *[]string{
+	return drawDependency(node, true)
+}
+
+func drawDependencyExclude(node *Node) *[]string{
+	return drawDependency(node, false)
+}
+
+func drawDependency(node *Node, include bool) *[]string {
 	var dependencyArr []string
+	if include {
+		dependencyArr = append(*node.Projects)
+	}
 	for node.Parent != &root {
 		dependencyArr = append(*node.Parent.Projects, dependencyArr...)
 		node = node.Parent
