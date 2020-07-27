@@ -65,7 +65,7 @@ func ReadDependency(project string) (*[]string, error){
 
 	node, err := findNode(current, project)
 	if err != nil {
-		return drawDependencyInclude(node), nil
+		return drawDependencyInclude(current), nil
 	}
 
 	return drawDependencyExclude(node), nil
