@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"google.golang.org/grpc"
@@ -14,7 +13,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Dropship Client start~")
+	log.Println("Dropship Client start...")
 
 	// length check
 	args := os.Args[1:]
@@ -58,7 +57,7 @@ func executeCommand(client marine.ProjectServiceClient, command string, req *mar
 	} else if strings.EqualFold(command, "status") {
 		var status *marine.ProjectStatus
 		status, err = client.Status(context.Background(), req)
-		fmt.Println(statusToString(status))
+		log.Println(statusToString(status))
 	} else if strings.EqualFold(command, "start") {
 		_, err = client.Start(context.Background(), req)
 	} else if strings.EqualFold(command, "stop") {
@@ -69,7 +68,7 @@ func executeCommand(client marine.ProjectServiceClient, command string, req *mar
 		var summary *marine.StatusSummary
 		summary, err = client.Summary(context.Background(), &empty.Empty{})
 		for _, status := range summary.Projects {
-			fmt.Println(statusToString(status))
+			log.Println(statusToString(status))
 		}
 	} else {
 		err = errors.New("not supported command")
