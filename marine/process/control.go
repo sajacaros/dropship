@@ -31,7 +31,7 @@ func Start(project string) error {
 	if err := assertDependency(project); err!=nil {
 		return err
 	}
-	
+
 	if err := checkRunningByPidMap(project); err != nil {
 		return err
 	}
@@ -258,16 +258,28 @@ func checkRunningByPidMap(project string) error {
 
 func checkRunningByName(project string) error {
 	processes, _ := process.Processes()
+
 	for _, pr := range processes {
 		var cmdLine string
 		var err error
 		cmdLine, err = pr.Cmdline()
-		command := strings.Split(cmdLine, " ")[0]
-		if err == nil && strings.Contains(command, "java") && strings.Contains(cmdLine, project) {
+		if err!=nil {
+			continue
+		}
+		if isRunningByName(cmdLine, project) {
 			return errors.New("already started.., please start after kill process, project : " + project + ", pid : " + strconv.Itoa(int(pr.Pid)))
 		}
 	}
 	return nil
+}
+
+func isRunningByName(cmdLine string, project string) bool {
+	allowCommand, err := config.AllowCommand()
+	if err != nil {
+		return false
+	}
+	command := strings.Split(cmdLine, " ")[0]
+	return strings.Contains(command, allowCommand) && strings.Contains(cmdLine, project)
 }
 
 func findPidByName(project string) (int, error) {
@@ -276,8 +288,10 @@ func findPidByName(project string) (int, error) {
 		var cmdLine string
 		var err error
 		cmdLine, err = pr.Cmdline()
-		command := strings.Split(cmdLine, " ")[0]
-		if err == nil && strings.Contains(command, "java") && strings.Contains(cmdLine, project) {
+		if err != nil {
+			continue
+		}
+		if isRunningByName(cmdLine, project) {
 			return int(pr.Pid), nil
 		}
 	}

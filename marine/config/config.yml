@@ -12,3 +12,5 @@ projects:
   - sunken
 profile: localization
 dependency: "[battery,observatory]-nexus-sunken-command"
+allowCommand: java
+completedMessage: "completed to run {prj}!!"

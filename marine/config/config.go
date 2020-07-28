@@ -14,6 +14,8 @@ type options struct {
 	Profile string
 	Dependency string
 	WorkingDir string
+	AllowCommand string
+	CompletedMessage string
 }
 
 var home string
@@ -62,6 +64,22 @@ func Projects() ([]string, error) {
 		return nil, err
 	}
 	return options.Projects, nil
+}
+
+func AllowCommand() (string, error) {
+	options, err := yamlContents()
+	if err != nil {
+		return "", err
+	}
+	return options.AllowCommand, nil
+}
+
+func CompletedMessage() (string, error) {
+	options, err := yamlContents()
+	if err != nil {
+		return "", err
+	}
+	return options.CompletedMessage, nil
 }
 
 func yamlContents() (*options, error) {
