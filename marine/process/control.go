@@ -70,7 +70,7 @@ func Start(project string) error {
 		case <-completeChannel:
 			log.Printf("%v is completed to start\n", project)
 			watcherChannel <- true
-		case <-time.After(10 * time.Second):
+		case <-time.After(30 * time.Second):
 			log.Printf("%v is failed to start\n", project)
 			watcherChannel <- false
 		}
@@ -89,10 +89,11 @@ func Start(project string) error {
 func watchStartedComplete(project string, scanner *bufio.Scanner, completeChannel chan struct{}) {
 	completedMessage,_ := config.CompletedMessage()
 	completedMessage = strings.Replace(completedMessage, "{prj}", project, 1)
-
+	log.Println("completedMessage : ", completedMessage)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.EqualFold(completedMessage, line) {
+			log.Println("checkmate")
 			completeChannel <- struct{}{}
 			break
 		}
