@@ -28,3 +28,7 @@
     ```
     ${home}/.dropship/config.yml
     ```
+## run
+    ```
+    nohup sh -c "./marineServer | head -c 1M" > ~/.dropship/log.out 2>&1 &
+    ```

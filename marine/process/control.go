@@ -1,6 +1,7 @@
 package process
 
 import (
+	"bufio"
 	"errors"
 	"github.com/Masterminds/semver"
 	"github.com/hako/durafmt"
@@ -56,10 +57,47 @@ func Start(project string) error {
 
 	cmd := exec.Command("java", "-Xmx512m", "-Xms256m", profileBase+profile, "-jar", fullPath)
 	cmd.Dir = projectDir
-	err = cmd.Start()
+	r, _ := cmd.StdoutPipe()
+
+	completeChannel := make(chan struct{})
+	watcherChannel := make(chan bool, 1)
+	
+	scanner := bufio.NewScanner(r)
+	go watchStartedComplete(project, scanner, completeChannel)
+	go func() {
+		select {
+		case <-completeChannel:
+			log.Printf("%v is completed to start\n", project)
+			watcherChannel <- true
+		case <-time.After(10 * time.Second):
+			log.Printf("%v is failed to start\n", project)
+			watcherChannel <- false
+		}
+	}()
+
+	cmd.Start()
 	pm[project] = cmd.Process.Pid
-	return nil
+
+	if ret := <- watcherChannel; ret {
+		return nil
+	}
+
+	return errors.New("failed to start the " + project)
 }
+
+func watchStartedComplete(project string, scanner *bufio.Scanner, completeChannel chan struct{}) {
+	completedMessage,_ := config.CompletedMessage()
+	completedMessage = strings.Replace(completedMessage, "{prj}", project, 1)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.EqualFold(completedMessage, line) {
+			completeChannel <- struct{}{}
+			break
+		}
+	}
+}
+
 
 func assertDependency(project string) error {
 	dependencies, err := dependency.ReadDependency(project)
