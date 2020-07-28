@@ -92,6 +92,7 @@ func watchStartedComplete(project string, scanner *bufio.Scanner, completeChanne
 	log.Println("completedMessage : ", completedMessage)
 	for scanner.Scan() {
 		line := scanner.Text()
+		log.Println(line)
 		if strings.EqualFold(completedMessage, line) {
 			log.Println("checkmate")
 			completeChannel <- struct{}{}
