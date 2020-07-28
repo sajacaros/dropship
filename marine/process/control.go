@@ -353,6 +353,7 @@ func findJarFileName(projectDir string, project string) (string, error) {
 
 func projectDir(project string) string {
 	workingDir, err := config.WorkingDirectory()
+	log.Println("workingDir : ", workingDir)
 	if err != nil {
 		return "./"
 	}
