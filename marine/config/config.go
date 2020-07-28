@@ -13,9 +13,9 @@ type options struct {
 	Projects []string `yaml:",flow"`
 	Profile string
 	Dependency string
-	WorkingDirectory string
-	AllowCommand string
-	CompletedMessage string
+	WorkingDirectory string `yaml:"workingDirectory"`
+	AllowCommand string `yaml:"allowCommand"`
+	CompletedMessage string `yaml:"completedMessage"`
 }
 
 var home string
