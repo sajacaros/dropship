@@ -89,12 +89,10 @@ func Start(project string) error {
 func watchStartedComplete(project string, scanner *bufio.Scanner, completeChannel chan struct{}) {
 	completedMessage,_ := config.CompletedMessage()
 	completedMessage = strings.Replace(completedMessage, "{prj}", project, 1)
-	log.Println("completedMessage : ", completedMessage)
 	for scanner.Scan() {
 		line := scanner.Text()
-		log.Println(line)
 		if strings.EqualFold(completedMessage, line) {
-			log.Println("checkmate")
+			log.Println("checkmate ", project)
 			completeChannel <- struct{}{}
 			break
 		}
