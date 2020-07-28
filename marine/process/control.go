@@ -43,10 +43,11 @@ func Start(project string) error {
 
 	projectDir := projectDir(project)
 	fileName, err := findJarFileName(projectDir, project)
-	fullPath := projectDir+"/"+fileName
 	if err != nil {
+		log.Println("projectDir : ", projectDir)
 		return err
 	}
+	fullPath := projectDir+"/"+fileName
 	log.Println("start ----", fullPath, "----")
 
 	var profile string
