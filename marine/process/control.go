@@ -91,8 +91,6 @@ func Start(project string) error {
 }
 
 func watchStartedComplete(project string, scanner *bufio.Scanner, completeChannel chan struct{}, ctx context.Context) {
-
-
 	completedMessage, _ := config.CompletedMessage()
 	completedMessage = strings.Replace(completedMessage, "{prj}", project, 1)
 	for scanner.Scan() {
@@ -102,7 +100,7 @@ func watchStartedComplete(project string, scanner *bufio.Scanner, completeChanne
 			if strings.EqualFold(completedMessage, line) {
 				log.Println("checkmate ", project)
 				completeChannel <- struct{}{}
-				break
+				return
 			}
 		case <-ctx.Done():  // if cancel() execute
 			log.Println("cancel to watch ",project," for go routine")
