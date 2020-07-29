@@ -2,7 +2,6 @@ package process
 
 import (
 	"bufio"
-	"context"
 	"errors"
 	"github.com/Masterminds/semver"
 	"github.com/hako/durafmt"
@@ -65,9 +64,8 @@ func Start(project string) error {
 	watcherChannel := make(chan bool, 1)
 	
 	scanner := bufio.NewScanner(r)
-	ctx, cancel := context.WithCancel(context.Background())
 
-	go watchStartedComplete(project, scanner, completeChannel, ctx)
+	go watchStartedComplete(project, scanner, completeChannel)
 	go func() {
 		select {
 		case <-completeChannel:
@@ -75,7 +73,6 @@ func Start(project string) error {
 			watcherChannel <- true
 		case <-time.After(20 * time.Second):
 			log.Printf("%v is failed to start\n", project)
-			cancel()
 			watcherChannel <- false
 		}
 	}()
@@ -90,20 +87,14 @@ func Start(project string) error {
 	return errors.New("failed to start the " + project)
 }
 
-func watchStartedComplete(project string, scanner *bufio.Scanner, completeChannel chan struct{}, ctx context.Context) {
+func watchStartedComplete(project string, scanner *bufio.Scanner, completeChannel chan struct{}) {
 	completedMessage, _ := config.CompletedMessage()
 	completedMessage = strings.Replace(completedMessage, "{prj}", project, 1)
 	for scanner.Scan() {
-		select {
-		default:
-			line := scanner.Text()
-			if strings.EqualFold(completedMessage, line) {
-				log.Println("checkmate ", project)
-				completeChannel <- struct{}{}
-				return
-			}
-		case <-ctx.Done():  // if cancel() execute
-			log.Println("cancel to watch ",project," for go routine")
+		line := scanner.Text()
+		if strings.EqualFold(completedMessage, line) {
+			log.Println("checkmate ", project)
+			completeChannel <- struct{}{}
 			return
 		}
 	}
