@@ -61,7 +61,7 @@ func CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, marshaler runtime
 	const fallback = `{"message": "failed to marshal error message", "code":5000}`
 
 	w.Header().Set("Content-type", marshaler.ContentType())
-	w.WriteHeader(runtime.HTTPStatusFromCode(http.StatusConflict))
+	w.WriteHeader(http.StatusConflict)
 	jErr := json.NewEncoder(w).Encode(errorBody{
 		Err: err.Error(),
 		Code: 5001,
