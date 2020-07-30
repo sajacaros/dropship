@@ -53,8 +53,8 @@ func Run() error {
 }
 
 type errorBody struct {
-	Code int32 `json:",code,omitempty"`
-	Err string `json:",message,omitempty"`
+	Code int32 `json:"code"`
+	Err string `json:"message"`
 }
 
 func CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
