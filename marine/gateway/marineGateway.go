@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"github.com/gorilla/handlers"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -22,6 +23,8 @@ func Run() error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
+
+	runtime.HTTPError = CustomHTTPError
 	// Register gRPC server endpoint
 	// Note: Make sure the gRPC server is running properly and accessible
 	basicMux := runtime.NewServeMux(
@@ -49,11 +52,22 @@ func Run() error {
 	return http.ListenAndServe(":3001", mux)
 }
 
+type errorBody struct {
+	Code int32 `json:",code,omitempty"`
+	Err string `json:",message,omitempty"`
+}
 
-//func main() {
-//	fmt.Printf("dropship gw start")
-//
-//	if err := run(); err != nil {
-//		log.Fatal("err for marine gateway")
-//	}
-//}
+func CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
+	const fallback = `{"message": "failed to marshal error message", "code":5000}`
+
+	w.Header().Set("Content-type", marshaler.ContentType())
+	w.WriteHeader(runtime.HTTPStatusFromCode(http.StatusConflict))
+	jErr := json.NewEncoder(w).Encode(errorBody{
+		Err: err.Error(),
+		Code: 5001,
+	})
+
+	if jErr != nil {
+		w.Write([]byte(fallback))
+	}
+}
