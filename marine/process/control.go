@@ -21,8 +21,13 @@ import (
 	"time"
 )
 
-type pidMap map[string]int
-var pm = pidMap{}
+type operationInfo struct {
+	pid int
+	version string
+}
+
+type projectManager map[string]operationInfo
+var pm = projectManager{}
 
 var profileBase = "-Dspring.profiles.active="
 
@@ -42,7 +47,7 @@ func Start(project string) error {
 	}
 
 	projectDir := projectDir(project)
-	fileName, err := findJarFileName(projectDir, project)
+	version, fileName, err := findJarFileName(projectDir, project)
 	if err != nil {
 		log.Println("projectDir : ", projectDir)
 		return err
@@ -78,7 +83,7 @@ func Start(project string) error {
 	}()
 
 	cmd.Start()
-	pm[project] = cmd.Process.Pid
+	pm[project] = operationInfo{version: version, pid:cmd.Process.Pid}
 
 	if ret := <- watcherChannel; ret {
 		return nil
@@ -204,8 +209,9 @@ func Status(project string) *marine.ProjectStatus {
 		return &marine.ProjectStatus{Project: project, Status: "Down"}
 	}
 	createTime, _ := process.CreateTime()
+
 	log.Println("create time : ", strconv.Itoa(int(createTime)), ", pid : ", strconv.Itoa(pid))
-	return &marine.ProjectStatus{Project: project, Status: "Running", Uptime: uptimeShortString(createTime), Pid: int32(pid)}
+	return &marine.ProjectStatus{Project: project, Status: "Running", Uptime: uptimeShortString(createTime), Pid: int32(pid), Version: getVersionByMap(project)}
 }
 
 func Summary() (*marine.StatusSummary, error) {
@@ -228,6 +234,7 @@ func Summary() (*marine.StatusSummary, error) {
 	return &marine.StatusSummary{Projects: summary}, nil
 }
 
+
 func findPid(project string) (int, error) {
 	pid, err := findPidByMap(project)
 	if err != nil {
@@ -242,7 +249,7 @@ func findPid(project string) (int, error) {
 
 
 func jarFileCopy(source string, project string) error {
-	fileName, err := findJarFileName(source, project)
+	_, fileName, err := findJarFileName(source, project)
 	if err != nil {
 		return err
 	}
@@ -269,10 +276,12 @@ func copy(src string, dst string) error {
 }
 
 func findPidByMap(project string) (int, error){
-	pid, exists := pm[project]
+	projectStatus, exists := pm[project]
 	if !exists {
 		return -1, errors.New("failed to retrieve pid from map, project : "+project)
 	}
+
+	pid := projectStatus.pid
 
 	if exists, err := process.PidExists(int32(pid)); err != nil || !exists {
 		delete(pm, project)
@@ -281,8 +290,18 @@ func findPidByMap(project string) (int, error){
 	return pid, nil
 }
 
+func getVersionByMap(project string) string{
+	projectStatus, exists := pm[project]
+	if !exists {
+		return "N/A"
+	}
+
+	return projectStatus.version
+}
+
 func checkRunningByPidMap(project string) error {
-	if pid, existsInMap := pm[project]; existsInMap {
+	if projectStatus, existsInMap := pm[project]; existsInMap {
+		pid := projectStatus.pid
 		existsInProcess, err := process.PidExists(int32(pid))
 		if err != nil {
 			return errors.New("failed to check that existsInProcess pid.., project : " + project + ", pid : " + strconv.Itoa(pid))
@@ -338,17 +357,16 @@ func findPidByName(project string) (int, error) {
 	return -1, errors.New("not exist running project, project : " + project)
 }
 
-func findJarFileName(projectDir string, project string) (string, error) {
+func findJarFileName(projectDir string, project string) (string, string, error) {
 	files, err := ioutil.ReadDir(projectDir)
 	if err != nil {
-		return "", errors.New("failed to read directory, dir : " + projectDir)
+		return "", "", errors.New("failed to read directory, dir : " + projectDir)
 	}
-	//^my-jar(\-\d+|\-\d+\.\d+)\.jar$
-	targetFile := latestJarFile(files, project)
+	version, targetFile := latestJarFile(files, project)
 	if targetFile != "" {
-		return targetFile, nil
+		return version, targetFile, nil
 	} else {
-		return "", errors.New("failed to find jar")
+		return "", "", errors.New("failed to find jar")
 	}
 }
 
@@ -361,8 +379,8 @@ func projectDir(project string) string {
 	return  workingDir+ "/" + project
 }
 
-func latestJarFile(files []os.FileInfo, project string) string {
-	var targetFile string
+func latestJarFile(files []os.FileInfo, project string) (string, string) {
+	var versionString, targetFile string
 	var prevVersion *semver.Version
 	for _, file := range files {
 		if filepath.Ext(file.Name()) != ".jar" {
@@ -374,7 +392,8 @@ func latestJarFile(files []os.FileInfo, project string) string {
 		}
 
 		res := versionRegex.FindAllString(file.Name(), -1)
-		version, err := semver.NewVersion(strings.Join(res, "."))
+		versionString = strings.Join(res, ".")
+		version, err := semver.NewVersion(versionString)
 		if err != nil {
 			log.Println("Failed to acquire version")
 			continue
@@ -390,7 +409,7 @@ func latestJarFile(files []os.FileInfo, project string) string {
 			}
 		}
 	}
-	return targetFile
+	return versionString, targetFile
 }
 func uptime(startTime time.Time) time.Duration {
 	return time.Since(startTime)

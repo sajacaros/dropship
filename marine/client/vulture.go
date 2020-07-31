@@ -88,6 +88,8 @@ func statusToString(status *marine.ProjectStatus) string {
 		sb.WriteString(status.Uptime)
 		sb.WriteString(")")
 	}
+	sb.WriteString(", version : ")
+	sb.WriteString(status.Status)
 	return sb.String()
 }
 
