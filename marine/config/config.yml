@@ -11,6 +11,6 @@ projects:
   - observatory
   - sunken
 profile: localization
-dependency: "[battery,observatory]-nexus-sunken-command"
+dependency: "[battery,observatory]-nexus-sunken-command-[cybernetics,nydus,overlord,bunker]"
 allowCommand: java
 completedMessage: "completed to run {prj}!!"

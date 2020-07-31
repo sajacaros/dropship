@@ -23,6 +23,10 @@ message ProjectIdentity {
   string project = 1;
 }
 
+message ProjectDependency {
+  string dependency = 1;
+}
+
 service ProjectService {
   //   Unary
   rpc Summary(google.protobuf.Empty) returns (StatusSummary) {
@@ -56,4 +60,10 @@ service ProjectService {
 
   rpc Install(google.protobuf.Empty) returns (google.protobuf.Empty){
   };
+
+  rpc Dependency(google.protobuf.Empty) returns (ProjectDependency) {
+    option (google.api.http) = {
+      get: "/dropship/api/v1/dependency"
+    };
+  }
 }

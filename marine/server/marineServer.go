@@ -17,11 +17,9 @@ import (
 type dropship struct {}
 
 func (*dropship) Summary(ctx context.Context, _ *empty.Empty) (*marine.StatusSummary, error) {
-	log.Printf("summary")
 	return process.Summary()
 }
 func (*dropship) Status(ctx context.Context, request *marine.ProjectIdentity) (*marine.ProjectStatus, error){
-	log.Printf("status %s", request.Project)
 	return process.Status(request.Project), nil
 }
 func (*dropship) Start(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
@@ -44,6 +42,10 @@ func (*dropship) Install(ctx context.Context, in *empty.Empty) (*empty.Empty, er
 	log.Printf("Install")
 	err := process.Install()
 	return &empty.Empty{}, err
+}
+
+func (*dropship) Dependency( ctx context.Context, in *empty.Empty) (*marine.ProjectDependency, error) {
+	return process.Dependency()
 }
 
 func main() {
