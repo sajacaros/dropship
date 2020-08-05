@@ -8,6 +8,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"google.golang.org/grpc"
+	"log"
 	"net/http"
 )
 
@@ -18,6 +19,8 @@ var (
 )
 
 func Run() error {
+	log.Println("grpc-gateway server serve")
+
 	flag.Parse()
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
@@ -49,7 +52,9 @@ func Run() error {
 	}
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(":3001", mux)
+	err = http.ListenAndServe(":3001", mux)
+	log.Println("grpc-gateway terminate")
+	return err
 }
 
 type errorBody struct {

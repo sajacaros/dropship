@@ -1,52 +1,12 @@
 package main
 
 import (
-	"context"
-	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/sajacaros/dropship/build/gen/bnpinnovation.com/marine"
 	"github.com/sajacaros/dropship/marine/gateway"
 	"github.com/sajacaros/dropship/marine/process"
-	"google.golang.org/grpc"
+	"github.com/sajacaros/dropship/marine/static"
 	"log"
-	"net"
-	"net/http"
-	"os"
 	"sync"
 )
-
-type dropship struct {}
-
-func (*dropship) Summary(ctx context.Context, _ *empty.Empty) (*marine.StatusSummary, error) {
-	return process.Summary()
-}
-func (*dropship) Status(ctx context.Context, request *marine.ProjectIdentity) (*marine.ProjectStatus, error){
-	return process.Status(request.Project), nil
-}
-func (*dropship) Start(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
-	log.Printf("start %s", request.Project)
-	err := process.Start(request.Project)
-	return &empty.Empty{}, err
-}
-func (*dropship) Stop(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
-	log.Printf("stop %s", request.Project)
-	err := process.Stop(request.Project)
-	return &empty.Empty{}, err
-}
-func (*dropship) Update(ctx context.Context, request *marine.ProjectIdentity) (*empty.Empty, error){
-	log.Printf("update %s", request.Project)
-	err := process.Update(request.Project)
-	return &empty.Empty{}, err
-}
-
-func (*dropship) Install(ctx context.Context, in *empty.Empty) (*empty.Empty, error) {
-	log.Printf("Install")
-	err := process.Install()
-	return &empty.Empty{}, err
-}
-
-func (*dropship) Dependency( ctx context.Context, in *empty.Empty) (*marine.ProjectDependency, error) {
-	return process.Dependency()
-}
 
 func main() {
 	log.Println("Start Dropship Server")
@@ -61,39 +21,16 @@ func main() {
 }
 
 func serveGRpcGatewayServer(waitGroup *sync.WaitGroup) {
-	log.Println("grpc-gateway server serve")
-
-	if err := gateway.Run(); err != nil {
-		waitGroup.Done()
-		log.Printf("grpc-gateway server terminate. %v\n", err)
-	}
+	gateway.Run()
+	waitGroup.Done()
 }
 
 func serveGRpcServer(waitGroup *sync.WaitGroup)  {
-	log.Println("grpc server serve, gateway://localhost:50051")
-	lis, err := net.Listen("tcp", "0.0.0.0:50051")
-	if err != nil {
-		log.Fatalf("failed to listen : %v", err)
-	}
-
-	s := grpc.NewServer()
-	marine.RegisterProjectServiceServer(s, &dropship{})
-
-	if err := s.Serve(lis); err != nil {
-		waitGroup.Done()
-		log.Printf("grpc server terminate. %v\n", err)
-	}
+	process.Run()
+	waitGroup.Done()
 }
 
 func serveStaticServer(waitGroup *sync.WaitGroup) {
-	home, _ := os.UserHomeDir()
-	workingDir := home + "/workspace/dropship"
-	log.Println("static server serve, gateway://localhost:3000")
-	fs := http.FileServer(http.Dir(workingDir+"/static"))
-	http.Handle("/", fs)
-	err := http.ListenAndServe(":3000", nil)
-	if err != nil {
-		waitGroup.Done()
-		log.Printf("static server terminate. %v\n", err)
-	}
+	static.Run()
+	waitGroup.Done()
 }
