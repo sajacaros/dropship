@@ -36,7 +36,7 @@ func handleFileServer() http.HandlerFunc {
 
 func Run() error {
 	log.Println("static server serve, http://localhost:3000")
-	http.HandleFunc("/static/", auth.JustCheck(&authenticator, handleFileServer()))
+	http.HandleFunc("/", auth.JustCheck(&authenticator, handleFileServer()))
 
 	err := http.ListenAndServe(":3000", nil)
 	log.Println("static server terminate")
