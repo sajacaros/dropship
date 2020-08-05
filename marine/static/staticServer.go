@@ -13,7 +13,7 @@ var authenticator auth.BasicAuth
 func init() {
 	home, _ = os.UserHomeDir()
 	workingDir = home + "/workspace/dropship"
-	secrets := auth.HtpasswdFileProvider("/.dropship/security.htpasswd")
+	secrets := auth.HtpasswdFileProvider(home+"/.dropship/security.htpasswd")
 	authenticator = auth.BasicAuth{Realm: "localhost", Secrets: secrets}
 }
 
