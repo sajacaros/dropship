@@ -1,10 +1,10 @@
 package static
 
 import (
+	auth "github.com/abbot/go-http-auth"
 	"log"
 	"net/http"
 	"os"
-	auth "github.com/abbot/go-http-auth"
 )
 
 var home, workingDir string
@@ -29,7 +29,6 @@ func handleFileServer() http.HandlerFunc {
 	fs := http.FileServer(http.Dir(workingDir+"/static"))
 	handler := fs.ServeHTTP
 	return func(w http.ResponseWriter, req *http.Request) {
-		log.Println(req.URL)
 		handler(w, req)
 	}
 }
