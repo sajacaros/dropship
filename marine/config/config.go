@@ -16,6 +16,7 @@ type options struct {
 	WorkingDirectory string `yaml:"workingDirectory"`
 	AllowCommand string `yaml:"allowCommand"`
 	CompletedMessage string `yaml:"completedMessage"`
+	WaitTime int `yaml:"waitTime"`
 }
 
 var home string
@@ -48,6 +49,14 @@ func Profile() (string, error) {
 		return "", err
 	}
 	return options.Profile, nil
+}
+
+func WaitTime() (int, error) {
+	options, err := yamlContents()
+	if err != nil {
+		return -1, err
+	}
+	return options.WaitTime, nil
 }
 
 func WorkingDirectory() (string, error) {

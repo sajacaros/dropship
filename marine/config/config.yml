@@ -14,3 +14,4 @@ profile: localization
 dependency: "[battery,observatory]-nexus-sunken-command-[cybernetics,nydus,overlord,bunker]"
 allowCommand: java
 completedMessage: "completed to run {prj}!!"
+waitTime: 20

@@ -72,11 +72,17 @@ func Start(project string) error {
 
 	go watchStartedComplete(project, scanner, completeChannel)
 	go func() {
+		waitTime, err := config.WaitTime()
+		if err != nil {
+			log.Println("waitTime not found, default : 20s")
+			waitTime = 20
+		}
+
 		select {
 		case <-completeChannel:
 			log.Printf("%v is completed to start\n", project)
 			watcherChannel <- true
-		case <-time.After(20 * time.Second):
+		case <-time.After(time.Duration(waitTime) * time.Second):
 			log.Printf("%v is failed to start\n", project)
 			watcherChannel <- false
 		}
