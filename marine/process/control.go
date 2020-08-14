@@ -387,7 +387,7 @@ func projectDir(project string) string {
 }
 
 func latestJarFile(files []os.FileInfo, project string) (string, string) {
-	var versionString, targetFile string
+	var latestVersion, targetFile string
 	var prevVersion *semver.Version
 	for _, file := range files {
 		if filepath.Ext(file.Name()) != ".jar" {
@@ -399,7 +399,7 @@ func latestJarFile(files []os.FileInfo, project string) (string, string) {
 		}
 
 		res := versionRegex.FindAllString(file.Name(), -1)
-		versionString = strings.Join(res, ".")
+		versionString := strings.Join(res, ".")
 		version, err := semver.NewVersion(versionString)
 		if err != nil {
 			log.Println("Failed to acquire version")
@@ -409,14 +409,16 @@ func latestJarFile(files []os.FileInfo, project string) (string, string) {
 		if prevVersion == nil {
 			targetFile = file.Name()
 			prevVersion = version
+			latestVersion = versionString
 		} else {
 			if prevVersion.Compare(version) < 0 {
 				targetFile = file.Name()
 				prevVersion = version
+				latestVersion = versionString
 			}
 		}
 	}
-	return versionString, targetFile
+	return latestVersion, targetFile
 }
 func uptime(startTime time.Time) time.Duration {
 	return time.Since(startTime)
