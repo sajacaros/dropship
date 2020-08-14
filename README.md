@@ -18,7 +18,7 @@
     ```
     set GOOS=linux&&set GOARCH=amd64&&go build -o build/out/marineServer marine/server/marineServer.go
     set GOOS=linux&&set GOARCH=amd64&&go build -o build/out/vulture marine/client/vulture.go
-    set GOOS=linux&&set GOARCH=arm64&&go build -o build/out/marineServer marine/server/marineServer.go
+    set GOOS=linux&&set GOARCH=arm64&&go build -o build/out/marineServerArm marine/server/marineServer.go
     ```
 ## static resource
     ```

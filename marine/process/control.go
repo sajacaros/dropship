@@ -264,6 +264,7 @@ func jarFileCopy(source string, project string) error {
 	if err != nil {
 		return err
 	}
+	log.Println("copy done, file : ", fileName)
 	return nil
 }
 
