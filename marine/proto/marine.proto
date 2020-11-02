@@ -36,6 +36,12 @@ service ProjectService {
     };
   };
 
+  rpc Sync(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/dropship/api/v1/sync"
+    };
+  };
+
   rpc Status(ProjectIdentity) returns (ProjectStatus) {
     option (google.api.http) = {
       get: "/dropship/api/v1/{project}/status"

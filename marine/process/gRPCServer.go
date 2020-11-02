@@ -29,6 +29,11 @@ type dropship struct {}
 func (*dropship) Summary(ctx context.Context, _ *empty.Empty) (*marine.StatusSummary, error) {
 	return Summary()
 }
+
+func (*dropship) Sync(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+	return &empty.Empty{}, Sync()
+}
+
 func (*dropship) Status(ctx context.Context, request *marine.ProjectIdentity) (*marine.ProjectStatus, error){
 	return Status(request.Project), nil
 }

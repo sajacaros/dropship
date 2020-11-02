@@ -240,6 +240,24 @@ func Summary() (*marine.StatusSummary, error) {
 	return &marine.StatusSummary{Projects: summary}, nil
 }
 
+func Sync() error {
+	projects, err := config.Projects()
+	if err!=nil {
+		return err
+	}
+	for _, project := range projects {
+		pid, err := findPidByName(project)
+		if err != nil {
+			delete(pm, project)
+		} else {
+			version := getVersionByMap(project)
+			pm[project] = operationInfo{pid: pid, version: version}
+
+		}
+	}
+	return nil
+}
+
 
 func findPid(project string) (int, error) {
 	pid, err := findPidByMap(project)

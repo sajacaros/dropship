@@ -27,6 +27,7 @@ func main() {
 	if !(strings.EqualFold(args[0], "install") || strings.EqualFold(args[0], "summary")) {
 		if argsLength != 2  {
 			log.Fatalf("need to 2 arguments, please try for 'vulture {command} ({project})'")
+			log.Fatalf("command : install, status, start, stop, update, summary, sync")
 		}
 		req = &marine.ProjectIdentity{
 			Project: args[1],
@@ -70,6 +71,8 @@ func executeCommand(client marine.ProjectServiceClient, command string, req *mar
 		for _, status := range summary.Projects {
 			log.Println(statusToString(status))
 		}
+	} else if strings.EqualFold(command, "sync"){
+		_, err = client.Sync(context.Background(), &empty.Empty{})
 	} else {
 		err = errors.New("not supported command")
 	}
@@ -89,7 +92,7 @@ func statusToString(status *marine.ProjectStatus) string {
 		sb.WriteString(")")
 	}
 	sb.WriteString(", version : ")
-	sb.WriteString(status.Status)
+	sb.WriteString(status.Version)
 	return sb.String()
 }
 
