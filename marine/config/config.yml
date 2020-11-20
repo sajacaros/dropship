@@ -10,8 +10,11 @@ projects:
   - bunker
   - observatory
   - sunken
-profile: localization
 dependency: "[battery,observatory]-nexus-sunken-command-[cybernetics,nydus,overlord,bunker]"
 allowCommand: java
 completedMessage: "completed to run {prj}!!"
 waitTime: 20
+execOption:
+  - "-Xmx512m"
+  - "-Xms256m"
+  - "-Dspring.profiles.active=local"

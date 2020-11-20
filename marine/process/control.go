@@ -29,7 +29,6 @@ type operationInfo struct {
 type projectManager map[string]operationInfo
 var pm = projectManager{}
 
-var profileBase = "-Dspring.profiles.active="
 
 var versionRegex = regexp.MustCompile("[0-9]+")
 
@@ -54,14 +53,10 @@ func Start(project string) error {
 	}
 	fullPath := projectDir+"/"+fileName
 	log.Println("start ----", fullPath, "----")
+	execOptions := getExecOption(fullPath)
+	log.Println("option ----", execOptions, "----")
 
-	var profile string
-	profile, err = config.Profile()
-	if err!=nil  {
-		return err
-	}
-
-	cmd := exec.Command("java", "-Xmx512m", "-Xms256m", profileBase+profile, "-jar", fullPath)
+	cmd := exec.Command("java", execOptions...)
 	cmd.Dir = projectDir
 	r, _ := cmd.StdoutPipe()
 
@@ -96,6 +91,15 @@ func Start(project string) error {
 	}
 
 	return errors.New("failed to start the " + project)
+}
+
+func getExecOption(fullPath string) []string {
+	fileOption, _ := config.ExecOption()
+
+	realOption := fileOption
+	realOption = append(realOption, "-jar")
+	realOption = append(realOption, fullPath)
+	return realOption
 }
 
 func watchStartedComplete(project string, scanner *bufio.Scanner, completeChannel chan struct{}) {

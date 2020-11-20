@@ -11,7 +11,7 @@ import (
 type options struct {
 	Source string
 	Projects []string `yaml:",flow"`
-	Profile string
+	ExecOption []string `yaml:"execOption,flow"`
 	Dependency string
 	WorkingDirectory string `yaml:"workingDirectory"`
 	AllowCommand string `yaml:"allowCommand"`
@@ -43,12 +43,12 @@ func Dependency()(string, error) {
 	return options.Dependency, nil
 }
 
-func Profile() (string, error) {
+func ExecOption() ([]string, error) {
 	options, err := yamlContents()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return options.Profile, nil
+	return options.ExecOption, nil
 }
 
 func WaitTime() (int, error) {
